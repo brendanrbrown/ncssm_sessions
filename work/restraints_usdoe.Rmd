@@ -1,0 +1,84 @@
+---
+title: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+knitr::opts_knit$set(root.dir="~/Documents/ncssm")
+```
+
+
+Propub work on restraints and seclusion (forced isolation) in public schools
+
+Using dataset that is regularly update, latest release:
+https://www.ed.gov/news/press-releases/us-department-education-releases-2017-18-civil-rights-data-collection
+
+
+an example of:
+
+- publicly released government data
+- on a serious issue
+- with a codebook
+- citizenship through data science
+
+```{r}
+library(data.table)
+setDTthreads(2)
+```
+
+
+```{r}
+d <- fread("./data/restraints_propub/public-use-files-2017-18/Data/SCH/CRDC/CSV/Restraint and Seclusion.csv")
+d <- d[, .(state = LEA_STATE, LEAID, SCHID, TOT_RS_NONIDEA_MECH_M, TOT_RS_NONIDEA_MECH_F,
+           TOT_RS_NONIDEA_SECL_M, TOT_RS_NONIDEA_SECL_F, TOT_RS_NONIDEA_PHYS_M, TOT_RS_NONIDEA_PHYS_F)]
+```
+
+What is this garbage? Why negatives?
+```{r}
+dsum <- d[, 
+          .(male_mech = sum(TOT_RS_NONIDEA_MECH_M), 
+            female_mech = sum(TOT_RS_NONIDEA_MECH_F), 
+            male_secl = sum(TOT_RS_NONIDEA_SECL_M),
+            female_secl = sum(TOT_RS_NONIDEA_SECL_F),
+            male_phys = sum(TOT_RS_NONIDEA_PHYS_F),
+            female_phys = sum(TOT_RS_NONIDEA_PHYS_F)), 
+          by = state]
+```
+
+LOOK AT PUERTO RICO OH MY GOD
+
+reformat to make prettier
+```{r}
+barplot(-dsum$male_mech, names.arg = dsum$state, 
+        cex.names = 0.5, horiz = F, las=2, col = "wheat3",
+        main = "Male students subject to mechanical restraint, '17-'18",
+        sub = "", xpd = F) # reformat --- sub gets in way of plot xpd not doing what I thought
+```
+
+```{r}
+barplot(-dsum$male_secl, names.arg = dsum$state, 
+        cex.names = 0.5, horiz = F, las=2, col = "tomato3",
+        main = "Male students subject to seclusion, '17-'18",
+        sub = "", xpd = F) # reformat --- sub gets in way of plot xpd not doing what I thought
+```
+
+
+whats the deal 
+```{r}
+barplot(as.matrix(-dsum[, .(male_mech, male_secl)]), beside = T,
+        cex.names = 0.5, horiz = F, las=2, col = c("wheat3", "tomato3"),
+        main = "Male students subject to mech. restraint/seclusion, '17-'18",
+        sub = "", xpd = F) # reformat --- sub gets in way of plot xpd not doing what I thought
+```
+
+groupwise summaries by gender(M/F) and state for non-disability students subjected to seclusion and mechanical or physical restraint in school
+maybe a simple map
+
+do this with base R as much as possible
+
+so many resources and examples! eg
+https://www.r-graph-gallery.com/
+
+little section on how I got the data, understanding the variables etc
+data quality problems --- this will be common!
