@@ -30,8 +30,7 @@ from matplotlib.colors import ListedColormap
 pat = re.compile(r"\\r|\\n|[\[\]']")
 
 def get_bobross():
-	# CHANGE FILEPATH TO GITHUB SITE
-	bob = pd.read_csv("~/Documents/ncssm/data/Bob_Ross_Paintings/data/bob_ross_paintings.csv")
+	bob = pd.read_csv("https://raw.githubusercontent.com/littlebuttermilk/ncssm_sessions/master/data/bob_ross_paintings.csv")
 	bob = bob.assign(colors = bob.colors.replace(pat, "").str.split(r"\s*,\s*"), 
 		color_hex = bob.color_hex.replace(pat, "").str.split(r"\s*,\s*"))
 
